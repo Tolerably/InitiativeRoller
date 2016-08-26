@@ -5,16 +5,16 @@
 for all combatants given.
 
 This program takes two combinations of input files: a file called "combatants.csv",
-which will contain all combatants, players and npcs alike."""
-
-
-import os.path
+which will contain all combatants, players and npcs alike, or two files called 
+"npcs.csv", and "pcs.csv", each containing their respective type of combatants"""
     
 def prepFile(name):
     """Preps a file in the the given folder for access to other functions.
      - Takes one argument: name, a string containing the name of the file being 
      accessed
      - Returns a list of strings from the file provided"""
+    
+    import os.path
     
     # Find absolute path
     directory = os.path.dirname(os.path.abspath(__file__))
@@ -71,18 +71,45 @@ def parseFile(fileContents):
         fileContents.remove(line)
     return fileContents
 
-# Prep and parse file
-contents = parseFile(prepFile("combatants.csv"))
+def main():
+    """Main function
+     - Takes no arguments
+     - Returns nothing"""
+    
+    # Prompt user to pick file(s)
+    choice = str(raw_input("Please select if you wish to use the file 'combatants.csv'\
+or the two files 'npcs.csv' and 'pcs.csv'\n\
+    Type '1' for 'combatants.csv'\n\
+    Type '2' for 'npcs.csv' and 'pcs.csv'\n\
+    Enter Number: "))
+    
+    if choice == '1':
+        # Prep and parse file
+        contents = parseFile(prepFile("combatants.csv"))
+    elif choice == '2':
+        # Prep and parse pcs.csv
+        contents = parseFile(prepFile('pcs.csv'))
+        # Append prepped and parsed npcs.csv to contents, which already has pcs.csv
+        for entry in parseFile(prepFile('npcs.csv')):
+            contents.append(entry)
+    else:
+        print("'"+choice+"' is not a valid input. Ending process")
+        return
 
-# Do the actual rolling
-rolls = {} # Dictionary
-for entry in contents:
-    rolls[entry[0]] = init(int(entry[1])) # Dict syntax- Name:mod
+    # Do the actual rolling
+    rolls = {} # Dictionary
+    for entry in contents:
+        rolls[entry[0]] = init(int(entry[1])) # Dict syntax- Name:mod
 
-# Sort the rolls from greatest to least
-sortedRolls = sorted(rolls,key=rolls.get)
-sortedRolls.reverse()
+    # Sort the rolls from greatest to least
+    sortedRolls = sorted(rolls,key=rolls.get)
+    sortedRolls.reverse()
 
-# Print and format the sorted rolls
-for i in range(len(sortedRolls)):
-    print(str(i+1)+". "+sortedRolls[i]+": "+str(rolls[sortedRolls[i]]))
+    # Print and format the sorted rolls
+    for i in range(len(sortedRolls)):
+        print(str(i+1)+". "+sortedRolls[i]+": "+str(rolls[sortedRolls[i]]))
+    return
+
+# If running as main file, execute main function
+if __name__ == "__main__":
+    main()
